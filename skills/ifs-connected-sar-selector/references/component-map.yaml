@@ -1,0 +1,174 @@
+# Component → SAR product-area map (CIIMP-151 local stand-in).
+# Keys are IFS component folder names under the workspace root.
+# Values: product_area slug (matches list_sar_jenkins_product_areas) + seed hints.
+
+defaults:
+  shared_infra:
+    - fndbas
+    - fndcob
+    - ifsapp
+    - appsrv
+  blast_radius: full-suite
+
+areas:
+  manufacturing:
+    display_name: Manufacturing
+    seed: testdata/manufacturing
+    components:
+      - ordstr
+      - manuf
+      - shpopr
+      - shopor
+      - mfgstd
+      - mrp
+      - crp
+      - cbs
+      - cbsint
+      - dop
+      - pmrp
+      - invent  # often coupled; prefer supplychain when purch/order dominate
+      - cost
+      - cfgchr
+      - cfgmgr
+      - cfgrul
+      - cfgbb
+      - cfgbko
+      - cfgvwr
+      - pdmcon
+      - partca
+      - engman
+      - pcmstd
+      - pmrp
+
+  supplychain:
+    display_name: Supply Chain
+    seed: testdata/supplychain
+    components:
+      - order
+      - purch
+      - invent
+      - discom
+      - discop
+      - disord
+      - rceipt
+      - shpmnt
+      - distribute
+      - customer
+      - enterp
+      - mpccom
+      - intrastat
+      - demand
+      - cussch
+
+  procurement:
+    display_name: Procurement
+    seed: testdata/procurement
+    components:
+      - purch
+      - srci
+
+  projects:
+    display_name: Projects
+    seed: testdata/projects
+    components:
+      - proj
+      - prjrep
+      - prjdel
+      - genled  # weak; prefer financials when accounting-heavy
+
+  financials:
+    display_name: Financials
+    seed: testdata/financials
+    components:
+      - accrul
+      - genled
+      - payled
+      - invoic
+      - taxled
+      - fixass
+      - fincfa
+      - fincon
+      - intled
+      - buspln
+      - cshpln
+
+  humancapitalmanagement:
+    display_name: Human Capital Management
+    seed: testdata/hcm
+    components:
+      - person
+      - emppay
+      - empsrv
+      - empint
+      - timrep
+      - absence
+      - career
+      - training
+      - wrkfrc
+
+  asset:
+    display_name: Asset
+    seed: testdata/assetmanagement
+    components:
+      - equip
+      - pcm
+      - wo
+      - mscom
+      - mscomp
+      - msched
+      - vim
+      - pcmstd
+      - worktime
+
+  service:
+    display_name: Service
+    seed: testdata/servicemanagement
+    components:
+      - srvagr
+      - srvcon
+      - request
+      - srvquo
+      - srvexp
+
+  airlineanddefence:
+    display_name: Airline And Defence
+    seed: testdata/AnD
+    components:
+      - adcom
+      - adcon
+      - fltpln
+      - flops
+      - flm
+      - flmexe
+      - vim
+
+  commerce:
+    display_name: Commerce
+    seed: testdata/commerce
+    components:
+      - crm
+      - sales
+      - quot
+      - campgn
+
+  industryprogram:
+    display_name: Industry Program
+    seed: testdata/Industries
+    components:
+      - food
+      - pharma
+      - oilgas
+
+  sustainabilityapplications:
+    display_name: Sustainability Applications
+    seed: testdata/sustainability
+    components:
+      - sustai
+
+# When a component appears in multiple areas, prefer the first listed here for ambiguous cases.
+priority:
+  - purch: procurement
+  - invent: supplychain
+  - order: supplychain
+  - vim: airlineanddefence
+  - pcmstd: manufacturing

@@ -1,0 +1,22 @@
+{
+  "name": "ifs-mfg-defect",
+  "displayName": "IFS Manufacturing Defect Analyzer",
+  "description": "End-to-end flow for IFS Cloud manufacturing defects (MFZ-*): fetch Jira + attachments, functional explanation, from-scratch recreate SAR, deploy fix, unit tests, verify fix asserts, RCA draft, standalone fix-flow SAR matrix, and release notes draft. Never writes Jira.",
+  "version": "0.1.0",
+  "author": {
+    "name": "IFS R&D Manufacturing"
+  },
+  "license": "Proprietary",
+  "keywords": [
+    "ifs",
+    "ifs-cloud",
+    "manufacturing",
+    "defect",
+    "jira",
+    "mfz",
+    "sar",
+    "scriptarest"
+  ],
+  "skills": "./skills/",
+  "commands": "./commands/"
+}

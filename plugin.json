@@ -1,0 +1,20 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "ifs-mfg-defect",
+  "version": "0.1.0",
+  "description": "End-to-end agent flow for IFS Cloud manufacturing defects (MFZ-*): recreate, fix, verify, RCA, SAR matrix, release notes.",
+  "author": {
+    "name": "IFS R&D Manufacturing"
+  },
+  "license": "Proprietary",
+  "keywords": [
+    "ifs",
+    "ifs-cloud",
+    "manufacturing",
+    "defect",
+    "jira",
+    "mfz",
+    "sar",
+    "scriptarest"
+  ]
+}

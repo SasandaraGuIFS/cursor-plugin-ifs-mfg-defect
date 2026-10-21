@@ -1,0 +1,2 @@
+# Optional — improves Word (.docx) → Markdown conversion in process_jira_attachments.py
+mammoth>=1.6.0

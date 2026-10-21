@@ -1,0 +1,21 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "ifs-rnd",
+  "description": "IFS R&D agent-plugin marketplace",
+  "owner": {
+    "name": "IFS R&D Manufacturing"
+  },
+  "plugins": [
+    {
+      "name": "ifs-mfg-defect",
+      "displayName": "IFS Manufacturing Defect Analyzer",
+      "description": "End-to-end flow for IFS Cloud manufacturing defects (MFZ-*).",
+      "version": "0.1.0",
+      "author": {
+        "name": "IFS R&D Manufacturing"
+      },
+      "source": "./",
+      "category": "development"
+    }
+  ]
+}

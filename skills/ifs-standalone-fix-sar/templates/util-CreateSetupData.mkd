@@ -1,0 +1,22 @@
+---
+type:  Test Util
+owner: Manufacturing
+---
+
+# {{JIRA}} — wrap existing recreate/setup and return keys
+
+## Description
+Calls the ticket recreate (or inttst setup util). Recreate **must** `Output` a JSON object of keys.
+
+### Required input
+None (Connect established by caller).
+
+### Output
+setupData
+
+```cs
+Call ../../../recreate/RecreateData.mkd Into setupData
+
+Output setupData
+
+```

@@ -1,0 +1,16 @@
+---
+type:  Test Case
+owner: Manufacturing
+mode:  Standalone
+---
+
+# {{JIRA}} — core automated matrix (standalone)
+
+## Description
+Tier-1 gap cases only. Each case creates fresh data. Connect user must match recreate/peer.
+
+```cs
+Connect alain
+
+Call CatchError tests/CASE01.mkd
+```

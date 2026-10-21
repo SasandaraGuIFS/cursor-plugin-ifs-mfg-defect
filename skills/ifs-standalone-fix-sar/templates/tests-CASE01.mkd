@@ -1,0 +1,22 @@
+---
+type:  Test Case
+owner: Manufacturing
+mode:  Standalone
+---
+
+# CASE01 — replace with gap scenario title
+
+```cs
+Call ../util/CreateSetupData.mkd Into setup
+
+Call ../../../../../inttst/test/inttst/ACTIVITY/UseCase/util/ExampleUtil.mkd With Json Into actionResponse
+{
+   "ChangeId"     : {%setup.ChangeId},
+   "ChangeRevNo"  : {%setup.ChangeRevNo}
+}
+
+Get ExampleHandling.svc/ExampleSet(ChangeId={$setup.ChangeId},ChangeRevNo={$setup.ChangeRevNo}) Into afterGet
+
+Assert {%afterGet.Objstate} == "Released"
+
+```
