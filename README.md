@@ -81,7 +81,7 @@ Copy-Item <plugin>\shared\docs\bnd-environment-*.* <ifs-workspace>\docs\
 In Cursor: **Settings > Plugins > Add plugin from git** and paste:
 
 ```
-<internal-bitbucket-url>/cursor-plugin-ifs-mfg-defect.git
+https://github.com/SasandaraGuIFS/cursor-plugin-ifs-mfg-defect.git
 ```
 
 Cursor clones to `%USERPROFILE%\.cursor\plugins\cache\<slug>\...` and auto-registers
@@ -89,7 +89,7 @@ every `skills/*/SKILL.md` and `commands/*.md`.
 
 ### Option 2 — via zip
 
-1. Download `ifs-mfg-defect-<version>.zip` from the Bitbucket release.
+1. Download `ifs-mfg-defect-<version>.zip` from the [GitHub release](https://github.com/SasandaraGuIFS/cursor-plugin-ifs-mfg-defect/releases).
 2. Unzip into `%USERPROFILE%\.cursor\plugins\local\ifs-mfg-defect\`.
 3. Restart Cursor.
 
