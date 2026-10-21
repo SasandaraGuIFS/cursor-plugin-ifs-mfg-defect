@@ -15,7 +15,7 @@ Commit an **already-written** master-track defect fix. Cut `bugfix/gunslk/27R1-<
 
 Branch, commit subject, history sign, and “never put `master` in the branch name” come from [`ifs-track-backport/references/formats-and-mapping.md`](../ifs-track-backport/references/formats-and-mapping.md). **Current master track is `27R1`.** Master commit has **no** `- 27R1` suffix.
 
-**Run as Composer 2.5.** Parent / `/commit-master-fix` must launch this agent with model Composer 2.5. Do not invent the functional fix.
+**Run as Composer 2.5.** Parent / `/commit-master-fix` must launch this agent with model Composer 2.5. Do not invent the functional fix. When launched from **ifs-mfg-defect-analysis** Step 9, the parent already obtained user **yes**. Standalone `/commit-master-fix` is itself confirmation.
 
 ## Hard stops
 
@@ -52,8 +52,11 @@ Git root: `c:\Dev\Master\workspace`.
 
 ## Ticket-file selection
 
+When launched from **ifs-mfg-defect-analysis** Step 9, the file list is the applied DUT source in `docs/<JIRA>/analysis.md` Step 5 — not every dirty path.
+
 Build an explicit path list **before** `git add`. Include a dirty/untracked file only if it is part of **this** issue’s fix:
 
+- Parent handed the DUT paths from analysis.md, **or**
 - Path or `git diff` content mentions the Jira key, **or**
 - History line already has `GUNSLK  <JIRA>` / the ticket id, **or**
 - The user named the files.

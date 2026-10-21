@@ -42,14 +42,15 @@ The script scans agent transcripts for `ifs-mfg-defect-analysis` sessions, extra
 - Re-run a completed step only when the user asks.
 - Recreate is **same-chat**. Author and run a from-scratch SAR with **bug-proving asserts** under `docs/<KEY>/recreate/`. Follow [references/recreate-sar.md](references/recreate-sar.md) plus manufacturing-sar-agent / ifs-sar-generator rules. Do not hand off a second chat. Do not use standalone-fix-sar or SAR-FDA for recreate.
 - Run recreate on **one** MASTER CMB as `alain`/`alain` (prefer DEV, fall back to DEP). ScriptARest `ServerUrl` is origin only — no `/main/ifsapplications/web/`.
-- Bug asserts passing **is** the recreate check. Do not wait for the user. After deploy, add a **second assert set** that proves the fix.
-- The recreate SAR is not the Step 7 standalone fix suite (`docs/<KEY>/sar/`).
+- Bug asserts passing **is** the recreate check. Do not wait for the user. After deploy, author and run a **separate Verify SAR** under `docs/<KEY>/recreate/` with fix asserts. Do not overwrite the Recreate MKD.
+- Recreate and Verify SARs are not the Step 7 standalone fix suite (`docs/<KEY>/sar/`).
+- **Do not** run master-commit (Step 9) or track-backport (Step 10) until the user confirms that git step. Draft files/tracks, ask, wait. Vague approval is not enough. Skip both if intended design. Skip 10 if Step 9 did not push or the user declined 9.
 
 ## Resume (every ticket)
 
 1. If `docs/<KEY>/analysis.md` exists, **read it first** and resume at the first unfinished gate.
 2. After each step, update that file (outcomes + checkboxes). Copy the skeleton from [references/resume-template.md](references/resume-template.md) on first run.
-3. Recreate is proven by bug asserts. The fix is proven by recreate **fix asserts**. WAD comments, RCA, and Release Notes are drafts only — do not write Jira and do not ask.
+3. Recreate is proven by bug asserts. The fix is proven by the **Verify SAR** fix asserts. WAD comments, RCA, and Release Notes are drafts only — do not write Jira and do not ask.
 
 ## Flow
 
@@ -59,10 +60,11 @@ Fetch + attachments → plain explanation + example → similar Jira
   → run ScriptARest on one MASTER CMB (prefer DEV, alain/alain) until bug asserts pass
   → functional investigation summary (1 paragraph)
   → investigate + draft fix + code review
-  → apply + deploy → unit tests for changed files → add fix asserts, re-run same SAR
+  → apply + deploy → unit tests for changed files → run Verify SAR until fix asserts pass
   → (if deploy fails, unit tests fail, or fix asserts fail: investigate, retry)
   → jira-rca agent → test matrix + standalone SAR (ifs-standalone-fix-sar)
   → Release Notes draft
+  → ask to commit 27R1 → (yes) master-fix-commit → ask to backport → (yes) track-backport
 ```
 
 ## Recreate sequence (mandatory)
@@ -73,7 +75,7 @@ Use this for **Step 4** (show the bug) and **Step 5b** (show the fix). Follow [r
 2. **Assert the bug.** Query the records that show the defect, then Assert.
 3. Run ScriptARest on **one** MASTER CMB as `alain`/`alain`. Prefer MASTER DEV CMB (`https://ifsmasterbnddevcmb.rnd.ifsdevworld.com`); if down, MASTER DEP CMB (`https://ifsmasterbnddepcmb.rnd.ifsdevworld.com`). `ServerUrl` is origin only — strip `/main/ifsapplications/web/`. Record the env in `analysis.md`.
 4. Fix harness issues and re-run until 0 failed server calls **and** bug asserts pass. That is recreate. Do not wait. Continue to Step 4b.
-5. **Step 5b:** add a second assert set that proves the fix. Re-run on the same env until those asserts pass.
+5. **Step 5b:** keep the Recreate MKD unchanged. Author `Verify<ShortName>.mkd` that reuses the same setup (prefer a local `recreate/util/`) with **fix asserts**. Run it on the same env until those asserts pass.
 
 ---
 
@@ -194,12 +196,13 @@ Only after Step 5. Skip if intended design.
    - If tests fail: do not continue to fix-assert verify. Investigate (stale `.tst`, source not deployed, assertion vs fix, env mismatch). Fix patch or test, redeploy, re-run. Same stop rule as item 4.
    - If Step 5 already drafted `.pltst` changes: those files are in the apply/deploy set and must be generated/deployed/run here.
 
-6. **Verify with the recreate SAR:**
-   - Keep the same `docs/<KEY>/recreate/` MKD. **Add a second assert set** that proves the correct behaviour.
-   - Re-run on the **same** MASTER CMB until fix asserts pass. If the env was wiped, re-run the same MKD as recovery seed with the fix asserts.
+6. **Verify with a separate SAR:**
+   - Keep `docs/<KEY>/recreate/Recreate<ShortName>.mkd` unchanged (bug asserts).
+   - Author `docs/<KEY>/recreate/Verify<ShortName>.mkd` with the same setup and **fix asserts**. Prefer a shared `recreate/util/` so the two files do not duplicate the data chain.
+   - Run the Verify SAR on the **same** MASTER CMB until fix asserts pass. If the env was wiped, re-run Verify as recovery seed.
    - Cover the primary failing path; add a second flow only if the ticket has two equally central paths.
 
-7. **If fix asserts fail** — do not treat the fix as done. Investigate: wrong LU/method, patch not in the deployed `.api`/`.apy`, session/cache, data not matching recreate, secondary cause. Revise the draft, redeploy, re-run unit tests, then retry this SAR.
+7. **If fix asserts fail** — do not treat the fix as done. Investigate: wrong LU/method, patch not in the deployed `.api`/`.apy`, session/cache, data not matching recreate, secondary cause. Revise the draft, redeploy, re-run unit tests, then retry the Verify SAR.
 
 8. Record env, deploy result, unit-test package / pass-fail counts / `none`, keys, and assert results in `docs/<KEY>/analysis.md`. Then continue to Step 6.
 
@@ -247,6 +250,40 @@ Optional: launch `Task` with `subagent_type: standalone-fix-sar` and hand off th
 After the matrix (product-defect path only). Follow [ifs-jira-release-notes](../ifs-jira-release-notes/SKILL.md) for **draft content only** — skip that skill’s “ask to update Jira” / write steps.
 
 Customer-facing prose, past tense, no bullets, no ticket links, no names. Do not copy the RCA narrative. Show the draft in chat and record it in `analysis.md`. **Do not** write the Jira Release Notes field or Tags. **Do not** ask to update Jira. Optionally note in the draft if **ExcludeFromSUReport** would be justified.
+
+Then continue to Step 9 — **ask**, do not commit yet.
+
+---
+
+### Step 9 — Master commit (user must confirm)
+
+Product-defect path only. Skip if intended design.
+
+Follow [ifs-master-commit](../ifs-master-commit/SKILL.md) (agent: `master-fix-commit`, Composer 2.5). **Do not** create Bitbucket PRs. **Do not** write Jira.
+
+1. **Draft** the git step: Jira key, DUT file list from `docs/<KEY>/analysis.md` Step 5 (applied source only — not `docs/<KEY>/`, skills, or `.sar-fda`), proposed branch `bugfix/gunslk/27R1-<KEY>-<slug>`, commit subject `<KEY>: <Jira summary>`.
+2. **Show** that draft in chat.
+3. **Ask:** *Should I run master-commit for `<KEY>`? Reply **yes**, **no**, or **edit**.*
+4. **Wait.** Unambiguous **yes** (or revised list after **edit**, then confirm again). `/commit-master-fix` in this conversation also counts as yes. “Looks good” / “proceed with the fix” is **not** yes.
+5. **No** — skip Step 9 and Step 10. Record skipped in `analysis.md`.
+6. On **yes**, launch `Task` with `subagent_type: master-fix-commit` (Composer 2.5). Hand off: Jira key, DUT paths from analysis.md. Record the wrap-up table in `analysis.md`.
+
+Do not start Step 10 until Step 9 has pushed and GPT 5.6 review was not left blocking.
+
+---
+
+### Step 10 — Track backport (user must confirm)
+
+Product-defect path only. Skip if intended design, if Step 9 did not push, or if the user declined Step 9.
+
+Follow [ifs-track-backport](../ifs-track-backport/SKILL.md) (agent: `track-backport`). **Do not** create Bitbucket PRs. **Do not** write Jira.
+
+1. **Draft** the git step: planned versions except 27R1 (newest first), proposed `bugfix/gunslk/<TRACK>-<KEY>-<slug>` branches, Verify SAR path (`docs/<KEY>/recreate/Verify*.mkd`).
+2. **Show** that draft in chat.
+3. **Ask:** *Should I run track-backport for `<KEY>`? Reply **yes**, **no**, or **edit**.*
+4. **Wait.** Unambiguous **yes** (or revised track list after **edit**, then confirm again). `/apply-previous-tracks` in this conversation also counts as yes. Vague approval is **not** yes.
+5. **No** — skip Step 10. Record skipped in `analysis.md`.
+6. On **yes**, launch `Task` with `subagent_type: track-backport`. Hand off: Jira key, master commit/branch from Step 9. Record the wrap-up table in `analysis.md`.
 
 ## Jira
 

@@ -18,10 +18,12 @@ Track: <resolved track> | Verdict: <pending | intended design | product defect>
 - [ ] 5 Fix drafted + code review run
 - [ ] 5b Fix applied + deployed
 - [ ] 5b Unit tests for changed files (or none)
-- [ ] 5b Recreate SAR green (fix asserts) on same MASTER CMB
+- [ ] 5b Verify SAR green (fix asserts) on same MASTER CMB
 - [ ] 6 RCA draft (chat / analysis.md only — do not write Jira)
 - [ ] 7 Matrix + SAR built (`docs/<KEY>/TEST-MATRIX.md` + `docs/<KEY>/sar/`, inttst dedup, RESULTS)
 - [ ] 8 Release Notes draft (chat / analysis.md only — do not write Jira)
+- [ ] 9 Master commit pushed (27R1) — only after user **yes**
+- [ ] 10 Track backport pushed — only after user **yes**
 
 ## Notes per step
 
@@ -35,7 +37,8 @@ Track: <resolved track> | Verdict: <pending | intended design | product defect>
 Env (MASTER DEV CMB prefer, DEP fallback): ...
 ServerUrl (origin only): ...
 Connect user: alain
-SAR MKD: docs/<KEY>/recreate/<file>.mkd
+SAR MKD: docs/<KEY>/recreate/Recreate<ShortName>.mkd
+Verify MKD: docs/<KEY>/recreate/Verify<ShortName>.mkd
 SAR run: pass/fail + bug asserts
 Created keys:
 

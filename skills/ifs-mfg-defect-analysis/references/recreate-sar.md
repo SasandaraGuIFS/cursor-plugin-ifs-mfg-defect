@@ -1,6 +1,6 @@
 # Recreate SAR — from scratch with asserts
 
-Product-defect path only. This **ticket chat** authors a SAR that builds the scenario from scratch, **asserts the bug**, runs until green, then continues. After the fix is deployed, the **same** SAR gets a second assert set that proves the correct behaviour.
+Product-defect path only. This **ticket chat** authors a SAR that builds the scenario from scratch, **asserts the bug**, runs until green, then continues. After the fix is deployed, author a **separate Verify SAR** (same folder, same setup) that proves the correct behaviour. Do not overwrite the Recreate MKD.
 
 This is **not** Step 7. Step 7 is the standalone fix suite under `docs/<KEY>/sar/` (after scanning `inttst`). Recreate lives under `docs/<KEY>/recreate/`.
 
@@ -19,12 +19,12 @@ Author and run using **manufacturing-sar-agent** + **ifs-sar-generator** rules (
 
 ## After the fix (show the fix)
 
-Keep the same recreate SAR. Add a **second assert set** that proves the correct behaviour.
+Author a **second** file: `docs/<KEY>/recreate/Verify<ShortName>.mkd`. Prefer a shared `recreate/util/` for the from-scratch setup so Recreate and Verify do not duplicate the data chain.
 
-- Recreate run (unfixed): setup + **bug asserts** must pass.
-- Verify run (Step 5b, fixed): same setup + **fix asserts** must pass. Bug asserts must not be required to pass on the fixed code (separate block).
+- Recreate run (unfixed): `Recreate<ShortName>.mkd` — setup + **bug asserts** must pass. Leave this file unchanged after the fix.
+- Verify run (Step 5b, fixed): `Verify<ShortName>.mkd` — same setup + **fix asserts** must pass.
 
-Re-run on the **same** MASTER CMB that recreated the bug.
+Run Verify on the **same** MASTER CMB that recreated the bug. After the DUT is deployed, Recreate bug asserts are expected to fail on that env; only Verify is required to stay green.
 
 ## Environment (ScriptARest)
 
@@ -100,4 +100,4 @@ Eval "MFZ30650-T-" + suffix                                         Into topPart
 
 ## Support-track copies (ifs-track-backport)
 
-When a previous-track run needs MKD edits, **leave this master recreate file unchanged**. Copy to `docs/<KEY>/recreate/<TRACK>/` and correct only that copy (add one `../` on relative `Call`s). See `ifs-track-backport`.
+When a previous-track run needs MKD edits, **leave the master Recreate and Verify files unchanged**. Copy the **Verify** SAR (and local `recreate/util/` if used) to `docs/<KEY>/recreate/<TRACK>/` and correct only that copy (add one `../` on relative `Call`s). See `ifs-track-backport`.

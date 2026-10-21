@@ -4,9 +4,9 @@ description: >-
   Ports an already-verified IFS Cloud master-track defect fix to previous
   release tracks (26R2, 26R1, 25R2, 25R1, 24R2): create bugfix branches, apply the
   same change with track history comments, deploy to that track's DEV CMB,
-  confirm changed packages compile, run the ticket recreate SAR (fix asserts),
-  commit and push. Does not create Bitbucket PRs. If the recreate SAR needs
-  track-specific edits, copy it — do not change the master recreate file.
+  confirm changed packages compile, run the ticket Verify SAR (fix asserts),
+  commit and push. Does not create Bitbucket PRs. If the Verify SAR needs
+  track-specific edits, copy it — do not change the master Recreate or Verify file.
   Browser/Aurena testing only if the user asks. Use when the user asks to
   apply the fix to previous tracks, backport, port to planned versions, run
   /apply-previous-tracks, or start the track-backport agent after the master
@@ -27,8 +27,8 @@ Read [formats-and-mapping.md](references/formats-and-mapping.md) before branchin
 - **No Jira writes** — read only (workspace rule).
 - **No bug tags** — history comment only, matching the sample PRs.
 - **No `git add .` / `git add -A`** — stage explicit paths.
-- **No stash** — if the main worktree is dirty, stop and ask.
-- **No commit** until deploy has been attempted, changed packages are checked (3c), **and recreate SAR fix asserts pass** (3d). Do not commit with master’s history date.
+- **No stash.** Stop if **tracked product source** outside this ticket’s DUT list is dirty. Untracked `docs/<JIRA>/`, skills, and `.sar-fda` do **not** block. Do not `git add .`.
+- **No commit** until deploy has been attempted, changed packages are checked (3c), **and Verify SAR fix asserts pass** (3d). Do not commit with master’s history date.
 - **No guessing** if the target-track code does not match — stop and show an adapted patch.
 - **No Aurena / browser test** unless the user explicitly asks.
 
@@ -42,7 +42,7 @@ Read and follow as needed:
 - `ifs-bitbucket-merge` — track ↔ base branch (override commit/PR title format with this skill)
 - `ifs-history-comments` — placement/spacing; **sign `GUNSLK`**, date = **today** (port day, not master’s)
 - `ifs-codegen` — generate/deploy before commit
-- Recreate SAR: `docs/<JIRA>/recreate/` and `ifs-mfg-defect-analysis` [recreate-sar.md](../ifs-mfg-defect-analysis/references/recreate-sar.md) for ServerUrl origin / `alain` / fix asserts
+- Verify SAR: `docs/<JIRA>/recreate/Verify*.mkd` and `ifs-mfg-defect-analysis` [recreate-sar.md](../ifs-mfg-defect-analysis/references/recreate-sar.md) for ServerUrl origin / `alain` / fix asserts
 
 Read `ifs-aurena-navigate` and `ifs-browser-test` **only** when the user asks for browser testing.
 
@@ -53,7 +53,7 @@ Read `ifs-aurena-navigate` and `ifs-browser-test` **only** when the user asks fo
 | Jira key (e.g. `MFZ-30494`) | Yes |
 | Master PR URL | No — search if omitted |
 
-Prerequisite: master fix is already applied and verified. Do not invent a new fix.
+Prerequisite: master fix is already applied and verified. Do not invent a new fix. When launched from **ifs-mfg-defect-analysis** Step 10, the parent already obtained user **yes**. Standalone `/apply-previous-tracks` is itself confirmation.
 
 ## Workflow
 
@@ -81,7 +81,7 @@ Git root: `c:\Dev\Master\workspace`.
 git -C "c:\Dev\Master\workspace" status
 ```
 
-If dirty, **stop**.
+If **tracked product source** outside this ticket’s DUT list is dirty, **stop**. Untracked `docs/<JIRA>/`, skills, and `.sar-fda` are not a stop.
 
 For each target track:
 
@@ -171,14 +171,14 @@ If invalids are from **this** defect’s logic (missing method, compile error in
 
 **SQL:** 3c VALID + fix-text checks must already have passed.
 
-**Recreate SAR (mandatory):** confirm the **fix** on this track’s DEV CMB before commit.
+**Verify SAR (mandatory):** confirm the **fix** on this track’s DEV CMB before commit.
 
-1. Find the master recreate MKD under `docs/<JIRA>/recreate/` in **`c:\Dev\Master\workspace`** (not the worktree). `FileToRead` that path so `Call ../../../inttst/...` still resolves. If none exists, **stop and ask**.
+1. Find the master **Verify** MKD (`docs/<JIRA>/recreate/Verify*.mkd`) in **`c:\Dev\Master\workspace`** (not the worktree). `FileToRead` that path so `Call ../../../inttst/...` still resolves. If none exists, **stop and ask**. Do not run the Recreate (bug-assert) MKD as the pass gate.
 2. Run ScriptARest: `Connect alain` / username `alain` / password `alain`. `ServerUrl` is the **origin only** for **this track’s DEV CMB** from `docs/bnd-environment-urls.md` (strip `/main/ifsapplications/web/`). Examples: 26R2 `https://ifs26r2bnddevcmb.rnd.ifsdevworld.com`, 26R1 `https://ifs26r1bnddevcmb.rnd.ifsdevworld.com`.
-3. Require the **fix-assert** set (correct behaviour). Do not require bug asserts to pass on the patched track.
-4. **Track-specific copy:** if the run fails because of a **track difference** (util path, projection, basic data, payload — not a missing product fix), **do not edit** the master recreate MKD. Copy to `docs/<JIRA>/recreate/<TRACK>/` (same basename). Fix **only that copy** (add one `../` on `Call` paths into `inttst` and local `util/`). Re-run until fix asserts pass. Other tracks still start from the master file unless they need their own copy.
+3. Require **fix asserts**. Do not require Recreate bug asserts to pass on the patched track.
+4. **Track-specific copy:** if the run fails because of a **track difference** (util path, projection, basic data, payload — not a missing product fix), **do not edit** the master Recreate or Verify MKD. Copy Verify (and local `util/` if used) to `docs/<JIRA>/recreate/<TRACK>/`. Fix **only that copy** (add one `../` on relative `Call` paths into `inttst` and local `util/`). Re-run until fix asserts pass. Other tracks still start from the master Verify file unless they need their own copy.
 5. If fix asserts fail because the **product port is wrong**: do not commit; do not weaken asserts. Investigate the port.
-6. Record in the wrap-up: SAR path used (master vs `recreate/<TRACK>/`) and pass/fail.
+6. Record in the wrap-up: Verify SAR path used (master vs `recreate/<TRACK>/`) and pass/fail.
 
 **Browser / Aurena:** only when the user explicitly asks. Then use `ifs-aurena-navigate` + `ifs-browser-test` on that track’s env. If the URL is unknown, ask once.
 
@@ -197,7 +197,7 @@ One-line message, colon format, destination track suffix. No commit body.
 
 ### 4. Wrap-up (user creates PRs)
 
-Print a table: Track | Branch | Destination | Suggested PR title | Push URL | Deploy notes (VALID / env-only INVALID) | Recreate SAR (path + pass/fail).
+Print a table: Track | Branch | Destination | Suggested PR title | Push URL | Deploy notes (VALID / env-only INVALID) | Verify SAR (path + pass/fail).
 
 Suggested title = commit message. Optional reviewer reminder from the reference.
 
@@ -207,5 +207,5 @@ Suggested title = commit message. Optional reviewer reminder from the reference.
 - History date on the **first** commit is the port date, not master’s
 - Support-track title suffix matches destination (`- 25R1` for `release/25.1`)
 - Only ticket files in the commit (track SAR copies live under `docs/<JIRA>/recreate/<TRACK>/` in the master workspace — they are **not** part of the track source commit unless the user asks)
-- Recreate SAR fix asserts passed on that track DEV CMB (or stopped and asked)
+- Verify SAR fix asserts passed on that track DEV CMB (or stopped and asked)
 - No Aurena run unless the user asked
