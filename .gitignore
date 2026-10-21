@@ -3,3 +3,10 @@ node_modules/
 .vscode/
 .idea/
 *.log
+
+# Override global ignore (user's gitignore_global.txt excludes docs/).
+# Plugin ships two docs/ trees and both must be published.
+!docs/
+!docs/**
+!shared/docs/
+!shared/docs/**
